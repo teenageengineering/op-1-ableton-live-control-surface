@@ -44,11 +44,12 @@ class OP1(ControlSurface):
 
 		self.app = Live.Application.get_application()
 
-		maj = self.app.get_major_version()
-		min = self.app.get_minor_version()
-		bug = self.app.get_bugfix_version()
-		
-		self.show_message(str(maj) + "." + str(min) + "." + str(bug))
+		#maj = self.app.get_major_version()
+		#min = self.app.get_minor_version()
+		#bug = self.app.get_bugfix_version()
+		#self.show_message(str(1) + "." + str(0) + "." + str(9))
+
+		self.show_message("Version " + VERSION)
 
 		# reseting text
 		self.write_text(' ')

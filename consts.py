@@ -1,3 +1,5 @@
+VERSION="1.0.9"
+
 # Number of tracks
 
 NUM_TRACKS = 13
