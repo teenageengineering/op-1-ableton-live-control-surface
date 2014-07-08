@@ -27,15 +27,15 @@ Installation
  Navigate to "Contents\App-Resources\MIDI Remote Scripts"
  Drop OP-1 folder into MIDI Remote Scripts Folder
 
-Windows
+- Windows
 
-Look for Ableton Live executable file
-Look for the folder MIDI Remote Scripts
-Drop OP-1 folder into MIDI Remote Scripts Folder
+ Look for Ableton Live executable file
+ Look for the folder MIDI Remote Scripts
+ Drop OP-1 folder into MIDI Remote Scripts Folder
 
-Finalize
+- Finalize
 
-Go to Ableton Live MIDI preferences
-Choose OP1 Control Surface
+ Go to Ableton Live MIDI preferences
+ Choose OP1 Control Surface
 
-For operation details give a look on TE-OP1-Mapping-Guide.pdf
+- For operation details give a look on TE-OP1-Mapping-Guide.pdf
