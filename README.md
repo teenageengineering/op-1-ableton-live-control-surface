@@ -4,9 +4,8 @@ Ableton Live Control Surface for Teenage Engineering OP-1
 
 Branches: 
 
-master - Control Surface base for Ableton Live 8
-
-live-9 - Modified base for Ableton Live 9
+- master - Control Surface base for Ableton Live 8
+- live-9 - Modified base for Ableton Live 9
 
 Know issues:
 
@@ -22,11 +21,11 @@ For related questions please use the contact form at www.imaginando.pt
 
 Installation
 
-Mac OSX
+- Mac OSX
 
-Right click on Live App bundle and click "Show Package Contents"
-Navigate to "Contents\App-Resources\MIDI Remote Scripts"
-Drop OP-1 folder into MIDI Remote Scripts Folder
+ Right click on Live App bundle and click "Show Package Contents"
+ Navigate to "Contents\App-Resources\MIDI Remote Scripts"
+ Drop OP-1 folder into MIDI Remote Scripts Folder
 
 Windows
 
