@@ -11,14 +11,6 @@ KNOW ISSUES:
 
 - The scripts are not fully working on Live 9
 
-== 
-
-Developer: Nuno Santos 
-
-For related questions please use the contact form at www.imaginando.pt
-
-==
-
 INSTALLATION
 
 - Mac OSX
@@ -39,3 +31,9 @@ INSTALLATION
  Choose OP1 Control Surface
 
 - For operation details give a look on TE-OP1-Mapping-Guide.pdf
+
+==
+
+Developer: Nuno Santos 
+
+For related questions please use the contact form at www.imaginando.pt
