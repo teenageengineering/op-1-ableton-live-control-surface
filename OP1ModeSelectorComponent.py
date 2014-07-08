@@ -139,7 +139,16 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
         if (self._current_mode==OP1_MODE_MIXER):
             # if on mixer mode, use not key to select a track
-            all_tracks = ((self.song().visible_tracks + self.song().return_tracks)) + (self.song().master_track,) #modified
+            all_tracks = []
+            
+            all_tracks.append(list(self.song().tracks))
+            all_tracks.append(list(self.song().return_tracks))
+            
+            m = [self.song().master_track]
+            all_tracks.append(m)
+            
+            all_tracks = [item for sublist in all_tracks for item in sublist]
+
             if (index < len(all_tracks)):
                 self.song().view.selected_track = all_tracks[index]
 
