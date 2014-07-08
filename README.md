@@ -2,12 +2,12 @@ Ableton Live Control Surface for Teenage Engineering OP-1
 
 ===
 
-Branches: 
+BRANCHES: 
 
 - master - Control Surface base for Ableton Live 8
 - live-9 - Modified base for Ableton Live 9
 
-Know issues:
+KNOW ISSUES:
 
 - The scripts are not fully working on Live 9
 
@@ -19,7 +19,7 @@ For related questions please use the contact form at www.imaginando.pt
 
 ==
 
-Installation
+INSTALLATION
 
 - Mac OSX
 
