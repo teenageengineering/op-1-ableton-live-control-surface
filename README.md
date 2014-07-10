@@ -1,7 +1,5 @@
 Ableton Live Control Surface for Teenage Engineering OP-1 
 
-===
-
 Copyright (C) 2012 Imaginando, Lda & Teenage Engineering AB
    
 This program is free software; you can redistribute it and/or
