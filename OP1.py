@@ -17,7 +17,7 @@
 #
 ##################################################################
 
-#OP-1 Python Scripts V0.9
+#OP-1 Python Scripts V1.0
 	
 from __future__ import with_statement
 
@@ -101,16 +101,18 @@ class OP1(ControlSurface):
 			# initializing channel strip to null
 			self._channel_strip = None
 
-			# initializing transport component
-			self._transport = TransportComponent()
-
 			# initializing mixer component
 			self._mixer = MixerComponent(NUM_TRACKS,2)
 
 			# initializing session component
 			self._session = SessionComponent(NUM_TRACKS,NUM_ROWS)
 			self._session.add_offset_listener(self.session_offset_changed)
+			self.set_highlighting_session_component(self._session)
+			self._suppress_session_highlight = False
 
+			# initializing transport component
+			self._transport = TransportComponent()
+			
 			# configuring operation mode selector buttons
 			self._operation_mode_buttons = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MODE_1_BUTTON), ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MODE_2_BUTTON), ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MODE_3_BUTTON), ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MODE_4_BUTTON), 
 			
@@ -132,8 +134,6 @@ class OP1(ControlSurface):
 			self._transport.set_punch_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS1_BUTTON), ButtonElement(True,MIDI_CC_TYPE, CHANNEL, OP1_SS2_BUTTON))
 			self._transport.set_loop_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS3_BUTTON))
 			self._transport.set_overdub_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS4_BUTTON))
-
-			self._transport.set_seek_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_LEFT_ARROW),ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_RIGHT_ARROW))
 
 			# setting global session assignments
 			self._session.set_scene_bank_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_COM),ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO))

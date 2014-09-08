@@ -47,6 +47,9 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         # creating buttons for the arrows keys
         self._left_arrow_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_LEFT_ARROW)
         self._right_arrow_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_RIGHT_ARROW)
+
+        self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
+        self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
         
         # creating button for the shift key
         self._shift_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SHIFT_BUTTON)
@@ -76,17 +79,29 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
     def number_of_modes(self):
         return NUM_MODES
 
+    def left_arrow_pressed(self, value):
+        if (value==127):
+            self._parent.song().scrub_by(-1)
+
+    def right_arrow_pressed(self, value):
+        if (value==127):
+            self._parent.song().scrub_by(1)
+
     def shift_pressed(self, value):
         # handling shift pressed (only for transport mode)
         if (self._current_mode==OP1_MODE_TRANSPORT):
             if (value==127):
-                self._transport.set_seek_buttons(None, None)
+                #self._transport.set_seek_buttons(None, None)
                 self._left_arrow_button.add_value_listener(self.shifted_left_arrow_pressed)
                 self._right_arrow_button.add_value_listener(self.shifted_right_arrow_pressed)
+                self._left_arrow_button.remove_value_listener(self.left_arrow_pressed)
+                self._right_arrow_button.remove_value_listener(self.right_arrow_pressed)
             else:
+                self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
+                self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
                 self._left_arrow_button.remove_value_listener(self.shifted_left_arrow_pressed)
                 self._right_arrow_button.remove_value_listener(self.shifted_right_arrow_pressed)
-                self._transport.set_seek_buttons(self._right_arrow_button, self._left_arrow_button)
+                #self._transport.set_seek_buttons(self._right_arrow_button, self._left_arrow_button)
 
     def shifted_left_arrow_pressed(self, value):
         # handling negative loop offset behavior
