@@ -17,14 +17,10 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 
 ===
 
-BRANCHES: 
+LAST UPDATE - 8 September 2014
 
-- master - Control Surface base for Ableton Live 8
-- live-9 - Modified base for Ableton Live 9
-
-KNOW ISSUES:
-
-- The scripts are not fully working on Live 9
+- The main problems with the Live 9 version of the scripts were fixed.
+- The red box appears again and the song position arrows work again but with a workaround as I still couldn't understand why set_seek_buttons of the TransportComponent aren't working.
 
 INSTALLATION
 
@@ -49,6 +45,6 @@ INSTALLATION
 
 ==
 
-Developer: Nuno Santos 
+Developer: Nuno Santos (Imaginando, Lda)
 
 For related questions please use the contact form at www.imaginando.pt
