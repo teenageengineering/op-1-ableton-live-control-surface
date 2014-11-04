@@ -48,8 +48,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         self._left_arrow_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_LEFT_ARROW)
         self._right_arrow_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_RIGHT_ARROW)
 
-        self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
-        self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
+        #self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
+        #self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
         
         # creating button for the shift key
         self._shift_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SHIFT_BUTTON)
@@ -70,6 +70,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         # creating a list of note keys buttons
         for i in range(len(self.note_keys_ccs)):
             self.note_keys_buttons.append(ButtonElement(True, MIDI_NOTE_TYPE, CHANNEL, self.note_keys_ccs[i]))
+
+        self.update()
 
     def disconnect(self):
         ModeSelectorComponent.disconnect(self)
@@ -202,9 +204,12 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
             elif (self._mode_index == OP1_MODE_TRANSPORT):
                 self._parent.log("TRANSPORT MODE")
+
+                self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
+                self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
                 
-                # settings arrows as seek buttons
-                self._transport.set_seek_buttons(self._right_arrow_button, self._left_arrow_button)
+                # settings arrows as seek buttons - doesn't work - can't understand why
+                #self._transport.set_seek_buttons(self._right_arrow_button, self._left_arrow_button)
 
                 # adding value listeners for note keys and note shifted keys
 
@@ -227,7 +232,7 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
             elif (self._mode_index == OP1_MODE_CLIP):
                 self._parent.log("CLIP MODE")
 
-                # setting arrows as track bank buttons
+                # setting arrows as track bank buttons - not working - can't understand why
                 self._session.set_track_bank_buttons(self._right_arrow_button, self._left_arrow_button)
 
                 # setting last key note as stop all clip button
@@ -251,6 +256,9 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
         elif (self._current_mode == OP1_MODE_TRANSPORT):
             self._parent.log("CLEARING TRANSPORT MODE")
+
+            self._left_arrow_button.remove_value_listener(self.left_arrow_pressed)
+            self._right_arrow_button.remove_value_listener(self.right_arrow_pressed)
 
             # removing value listeners for note keys
             for i in range(NUM_TRACKS):
