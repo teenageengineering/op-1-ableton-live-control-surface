@@ -17,7 +17,19 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 
 ===
 
-LAST UPDATE - 8 September 2014
+LAST UPDATE - 22 April 2017
+- OP1 can now control transport params of Ableton in "transport mode" (tape)
+- shift + arrows jumps to next/previous marker
+- lift button sets/unsets a marker
+- shift+lift hides/shows the browser
+- blue encoder scrubs the tape (even while playing)
+- green encoder changes quantization parameters
+- white encoder moves the play position and makes a selection while pressed
+- shift + play plays a selection (if there is one)
+- shift + loop in sets the beggining of the loop to the current play position
+- screen now displays play state, quantization and BPM
+
+8 September 2014
 
 - The main problems with the Live 9 version of the scripts were fixed.
 - The red box appears again and the song position arrows work again but with a workaround as I still couldn't understand why set_seek_buttons of the TransportComponent aren't working.
