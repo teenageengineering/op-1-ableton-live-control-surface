@@ -41,6 +41,33 @@ from _Framework.InputControlElement import *
 
 from OP1ModeSelectorComponent import OP1ModeSelectorComponent
 
+QUANT_ORDER = [
+Live.Song.Quantization.q_no_q,
+Live.Song.Quantization.q_8_bars,
+Live.Song.Quantization.q_4_bars,
+Live.Song.Quantization.q_2_bars,
+Live.Song.Quantization.q_bar,
+Live.Song.Quantization.q_half,
+Live.Song.Quantization.q_half_triplet,
+Live.Song.Quantization.q_quarter,
+Live.Song.Quantization.q_quarter_triplet,
+Live.Song.Quantization.q_eight,
+Live.Song.Quantization.q_eight_triplet,
+Live.Song.Quantization.q_sixtenth,
+Live.Song.Quantization.q_sixtenth_triplet,
+Live.Song.Quantization.q_thirtytwoth
+]
+
+def get_q_idx(q):
+    idx = QUANT_ORDER.index(q) if q in QUANT_ORDER else None
+    return idx
+
+def get_q_enum(idx):
+    if idx < 0: return QUANT_ORDER[0]
+    if idx > len(QUANT_ORDER)-1: return QUANT_ORDER[-1]
+    return QUANT_ORDER[idx]
+
+
 class OP1(ControlSurface):
 	def __init__(self, c_instance):
 		ControlSurface.__init__(self, c_instance)
@@ -62,7 +89,7 @@ class OP1(ControlSurface):
 
 			self.text_color_start_sequence = (0xf0, 0x0, 0x20, 0x76, 0x00, 0x04)
 
-			self.log('INITIALIZING')
+#			self.log('INITIALIZING')
 
 			self.app = Live.Application.get_application()
 
@@ -127,31 +154,46 @@ class OP1(ControlSurface):
 
 			# setting global transport assignments
 			self._transport.set_record_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_REC_BUTTON))
-			self._transport.set_play_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_PLAY_BUTTON))
 			self._transport.set_stop_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_STOP_BUTTON))  
 			self._transport.set_metronome_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_METRONOME_BUTTON))  
 			self._transport.set_tap_tempo_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_HELP_BUTTON))
-			self._transport.set_punch_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS1_BUTTON), ButtonElement(True,MIDI_CC_TYPE, CHANNEL, OP1_SS2_BUTTON))
+#			self._transport.set_punch_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS1_BUTTON), ButtonElement(True,MIDI_CC_TYPE, CHANNEL, OP1_SS2_BUTTON))
 			self._transport.set_loop_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS3_BUTTON))
 			self._transport.set_overdub_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS4_BUTTON))
+
+                        self._play_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_PLAY_BUTTON)
+#                        self._transport.set_play_button(self._play_button)
+                        self.shift_pressed = False
+                        self._play_button.add_value_listener(self.play_button_callback)
 
 			# setting global session assignments
 			self._session.set_scene_bank_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_COM),ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO))
 
+                        # encoder for transport control - leave it empty for now
+                        self._encoder_1 = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_1, Live.MidiMap.MapMode.relative_two_compliment)
+                        self._encoder_2 = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_2, Live.MidiMap.MapMode.relative_two_compliment)
+                        self._encoder_3 = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_3, Live.MidiMap.MapMode.relative_two_compliment)
+                        self._encoder_4 = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_4, Live.MidiMap.MapMode.relative_two_compliment)
 			# setting misc listeners
-			self.browser_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, 15)
-			self.browser_toggle_button.add_value_listener(self.browser_toggle_button_callback)
 
-			self.mainview_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, 16)
+                        self._encoder_1_push = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_1_PUSH)
+                        self._encoder_2_push = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_2_PUSH)
+                        self._encoder_3_push = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_3_PUSH)
+                        self._encoder_4_push = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_4_PUSH)
+
+                        self._encoder_3_push.add_value_listener(self.e3_push_callback)
+                        self._e3_pressed = False
+
+			self.mainview_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, OP1_ARROW_DOWN_BUTTON)
 			self.mainview_toggle_button.add_value_listener(self.mainview_toggle_button_callback)
 
-			self.detailview_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, 17)
+			self.detailview_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, OP1_SCISSOR_BUTTON)
 			self.detailview_toggle_button.add_value_listener(self.detailview_toggle_button_callback)
 
-			self.clear_track_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, 25)
+			self.clear_track_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS8_BUTTON)
 			self.clear_track_button.add_value_listener(self.clear_track_button_callback)
 
-			self.back_to_arranger_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, 26)
+			self.back_to_arranger_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SEQ_BUTTON)
 			self.back_to_arranger_button.add_value_listener(self.back_to_arranger_button_callback)
 
 			# adding value listener for selected track change
@@ -261,14 +303,51 @@ class OP1(ControlSurface):
 		if (self._operation_mode_selector.mode_index==OP1_MODE_CLIP):
 			self.update_display_clip_mode()
 
+        def e3_push_callback(self, value):
+            self._e3_pressed = True if value == 127 else False
+
+        def e1_transport_scrub(self, value):
+            if value == 4:
+                self.song().scrub_by(1)
+            else:
+                self.song().scrub_by(-1)
+        def e2_transport_scrub(self, value):
+            if value == 4:
+                x = 1
+            else:
+                x = -1
+            idx = get_q_idx(self.song().clip_trigger_quantization)
+            self.song().clip_trigger_quantization = get_q_enum(idx+x)
+        def e_transport_scroll(self, value, b):
+            if value == 4:
+                x = Live.Application.Application.View.NavDirection.right
+            else:
+                x = Live.Application.Application.View.NavDirection.left
+            self.app.view.scroll_view(x, "Arranger", b)
+        def e3_transport_scroll(self, value):
+            self.e_transport_scroll(value, self._e3_pressed)
+
+        def play_button_callback(self, value):
+            if self.shift_pressed == True:
+                self.song().play_selection()
+            else:
+                self.song().start_playing()
+
 	def mode_index_changed(self):
 		# update display to current mode info
+                self._encoder_1.remove_value_listener(self.e1_transport_scrub)
+                self._encoder_2.remove_value_listener(self.e2_transport_scrub)
+                self._encoder_3.remove_value_listener(self.e3_transport_scroll)
 		if (self._operation_mode_selector.mode_index==OP1_MODE_PERFORM):
 			self.update_display_perform_mode()
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_CLIP):
 			self.update_display_clip_mode()
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_TRANSPORT):
 			self.update_display_transport_mode()
+                        self.clear_tracks_assigments()
+                        self._encoder_1.add_value_listener(self.e1_transport_scrub)
+                        self._encoder_2.add_value_listener(self.e2_transport_scrub)
+                        self._encoder_3.add_value_listener(self.e3_transport_scroll)
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_MIXER):
 			self.update_display_mixer_mode()
 
@@ -301,7 +380,10 @@ class OP1(ControlSurface):
 
 	def clear_tracks_assigments(self):
 		# for all normal tracks, clear assignments
-		for i in range(NUM_TRACKS):
+                self.clear_track_assignment(self._mixer.selected_strip())
+                self.clear_return_track_assignment(self._mixer.selected_strip())
+		self._mixer.selected_strip().set_send_controls(tuple((None, None)))
+                for i in range(NUM_TRACKS):
 			strip = self._mixer.channel_strip(i)
 			if (strip!=None):
 				self.clear_track_assignment(strip)
@@ -320,15 +402,20 @@ class OP1(ControlSurface):
 		# clear track assignments
 		self.clear_tracks_assigments()
 
+                # if transport mode, we don't want to control stuff
+		if (self._operation_mode_selector.mode_index==OP1_MODE_TRANSPORT): 
+                    return
+                
+
 		# getting selected strip
 		self._channel_strip = self._mixer.selected_strip()
 
 		# perform track assignments 
-		self._channel_strip.set_volume_control(EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_1, Live.MidiMap.MapMode.relative_two_compliment))
-		self._channel_strip.set_pan_control(EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_2, Live.MidiMap.MapMode.relative_two_compliment))
+		self._channel_strip.set_volume_control(self._encoder_1)
+		self._channel_strip.set_pan_control(self._encoder_2)
 
 		# setting a tuple of encoders to control sends
-		send_controls = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_3, Live.MidiMap.MapMode.relative_two_compliment), EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_4, Live.MidiMap.MapMode.relative_two_compliment),
+		send_controls = self._encoder_3, self._encoder_4,
 
 		# setting send encoders
 		self._channel_strip.set_send_controls(tuple(send_controls))
@@ -345,23 +432,6 @@ class OP1(ControlSurface):
 			self._channel_strip.set_mute_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS5_BUTTON))
 
 
-	def browser_toggle_button_callback(self, value):
-		if (value==127):
-			if (self.session_visible):
-				if (self.session_browser_visible==True):
-					self.session_browser_visible=False
-					self.app.view.hide_view("Browser")
-				else:
-					self.session_browser_visible=True
-					self.app.view.show_view("Browser")
-
-			if (self.arrange_visible):
-				if (self.arrange_browser_visible==True):
-					self.arrange_browser_visible=False
-					self.app.view.hide_view("Browser")
-				else:
-					self.arrange_browser_visible=True
-					self.app.view.show_view("Browser")
 
 	def back_to_arranger_button_callback(self, value):
 		if (value==127):
@@ -467,9 +537,29 @@ class OP1(ControlSurface):
 	def update_display_clip_mode(self):
 		self.write_text("sel. scene\r" + str(self.song().view.selected_scene.name.lower().strip()))
 
+
+        def get_quant_str(self, q):
+            if q == Live.Song.Quantization.q_2_bars: return "2b"
+            if q == Live.Song.Quantization.q_4_bars: return "4b"
+            if q == Live.Song.Quantization.q_8_bars: return "8b"
+            if q == Live.Song.Quantization.q_bar: return "1b"
+            if q == Live.Song.Quantization.q_half: return "/2"
+            if q == Live.Song.Quantization.q_half_triplet: return "/2t"
+            if q == Live.Song.Quantization.q_quarter: return "/4"
+            if q == Live.Song.Quantization.q_quarter_triplet: return "/4t"
+            if q == Live.Song.Quantization.q_eight: return "/8"
+            if q == Live.Song.Quantization.q_eight_triplet: return "/8t"
+            if q == Live.Song.Quantization.q_sixtenth: return "/16"
+            if q == Live.Song.Quantization.q_sixtenth_triplet: return "/16t"
+            if q == Live.Song.Quantization.q_thirtytwoth: return "/32"
+            if q == Live.Song.Quantization.q_no_q: return "non"
+            return ":("
+
 	def update_display_transport_mode(self):
 		song_time = str(self.song().get_current_beats_song_time())
-		self.write_text("song pos.\r" + song_time[:len(song_time)-4])
+                playing = '>' if self.song().is_playing else ''
+                record = '*' if self.song().record_mode else ''
+		self.write_text(playing + record + " " + self.get_quant_str(self.song().clip_trigger_quantization) + " " + str("%.2f" % round(self.song().tempo,2)) + "\r" + song_time[:len(song_time)-4])
 
 	def update_display_mixer_mode(self):
 		self.write_text("sel. track\r" + str(self.song().view.selected_track.name.lower()))
