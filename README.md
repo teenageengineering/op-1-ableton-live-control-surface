@@ -25,6 +25,7 @@ LAST UPDATE - 22 April 2017
 - blue encoder scrubs the tape (even while playing)
 - green encoder changes quantization parameters
 - white encoder moves the play position and makes a selection while pressed
+- orange encoder zooms arrangement view when in transport mode
 - shift + play plays a selection (if there is one)
 - shift + loop in sets the beggining of the loop to the current play position
 - screen now displays play state, quantization and BPM
