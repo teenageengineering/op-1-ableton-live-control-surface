@@ -326,6 +326,12 @@ class OP1(ControlSurface):
             self.app.view.scroll_view(x, "Arranger", b)
         def e3_transport_scroll(self, value):
             self.e_transport_scroll(value, self._e3_pressed)
+        def e4_transport_zoom(self, value):
+            if value == 4:
+                x = Live.Application.Application.View.NavDirection.right
+            else:
+                x = Live.Application.Application.View.NavDirection.left
+            self.app.view.zoom_view(x, "Arranger", True)
 
         def play_button_callback(self, value):
             if self.shift_pressed == True:
@@ -338,6 +344,7 @@ class OP1(ControlSurface):
                 self._encoder_1.remove_value_listener(self.e1_transport_scrub)
                 self._encoder_2.remove_value_listener(self.e2_transport_scrub)
                 self._encoder_3.remove_value_listener(self.e3_transport_scroll)
+                self._encoder_4.remove_value_listener(self.e4_transport_zoom)
 		if (self._operation_mode_selector.mode_index==OP1_MODE_PERFORM):
 			self.update_display_perform_mode()
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_CLIP):
@@ -348,6 +355,7 @@ class OP1(ControlSurface):
                         self._encoder_1.add_value_listener(self.e1_transport_scrub)
                         self._encoder_2.add_value_listener(self.e2_transport_scrub)
                         self._encoder_3.add_value_listener(self.e3_transport_scroll)
+                        self._encoder_4.add_value_listener(self.e4_transport_zoom)
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_MIXER):
 			self.update_display_mixer_mode()
 
