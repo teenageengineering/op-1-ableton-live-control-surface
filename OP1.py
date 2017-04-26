@@ -148,7 +148,7 @@ class OP1(ControlSurface):
 			self._operation_mode_selector.add_mode_index_listener(self.mode_index_changed)
 
 			# setting global transport assignments
-			self._transport.set_record_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_REC_BUTTON))
+#			self._transport.set_record_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_REC_BUTTON))
 			self._transport.set_stop_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_STOP_BUTTON))  
 			self._transport.set_metronome_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_METRONOME_BUTTON))  
 			self._transport.set_tap_tempo_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_HELP_BUTTON))
@@ -157,9 +157,11 @@ class OP1(ControlSurface):
 			self._transport.set_overdub_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS4_BUTTON))
 
                         self._play_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_PLAY_BUTTON)
+                        self._rec_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL,OP1_REC_BUTTON)
 #                        self._transport.set_play_button(self._play_button)
                         self.shift_pressed = False
                         self._play_button.add_value_listener(self.play_button_callback)
+                        self._rec_button.add_value_listener(self.record_button_callback)
 
 			# setting global session assignments
                         self._micro_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO)
@@ -334,6 +336,10 @@ class OP1(ControlSurface):
                 self.song().play_selection()
             else:
                 self.song().start_playing()
+
+        def record_button_callback(self, value):
+            if value == 127:
+                self.song().record_mode = not self.song().record_mode
 
 	def mode_index_changed(self):
 
