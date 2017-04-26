@@ -80,12 +80,12 @@ class OP1(ControlSurface):
 			self.clip_color_callbacks = {}
 			self.slot_callbacks = {}
 
-			self.text_start_sequence = (0xf0, 0x0, 0x20, 0x76, 0x00, 0x03)
-			self.text_end_sequence = (0xf7,)
-			self.enable_sequence = (0xf0, 0x00, 0x20, 0x76, 0x00, 0x01, 0x02, 0xf7)
-			self.disable_sequence = (0xf0, 0x00, 0x20, 0x76, 0x00, 0x01, 0x00, 0xf7)
+			self.text_start_sequence = (0xf0, 0x00, 0x20, 0x76, 0x00, 0x03)
+			self.text_end_sequence =   (0xf7,)
+			self.enable_sequence =     (0xf0, 0x00, 0x20, 0x76, 0x00, 0x01, 0x02, 0xf7)
+			self.disable_sequence =    (0xf0, 0x00, 0x20, 0x76, 0x00, 0x01, 0x00, 0xf7)
 
-			self.id_sequence = (0xf0, 0x7e, 0x7f, 0x06, 0x01, 0xf7)
+			self.id_sequence =         (0xf0, 0x7e, 0x7f, 0x06, 0x01, 0xf7)
 
 			self.text_color_start_sequence = (0xf0, 0x0, 0x20, 0x76, 0x00, 0x04)
 
@@ -167,7 +167,8 @@ class OP1(ControlSurface):
                         self._play_button.add_value_listener(self.play_button_callback)
 
 			# setting global session assignments
-			self._session.set_scene_bank_buttons(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_COM),ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO))
+                        self._micro_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO)
+                        self._com_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_COM)
 
                         # encoder for transport control - leave it empty for now
                         self._encoder_1 = EncoderElement(MIDI_CC_TYPE, CHANNEL, OP1_ENCODER_1, Live.MidiMap.MapMode.relative_two_compliment)
@@ -340,11 +341,18 @@ class OP1(ControlSurface):
                 self.song().start_playing()
 
 	def mode_index_changed(self):
-		# update display to current mode info
+
+                # remove transport assignments
                 self._encoder_1.remove_value_listener(self.e1_transport_scrub)
                 self._encoder_2.remove_value_listener(self.e2_transport_scrub)
                 self._encoder_3.remove_value_listener(self.e3_transport_scroll)
                 self._encoder_4.remove_value_listener(self.e4_transport_zoom)
+                self._micro_button.remove_value_listener(self.mic_button_sel_up)
+                self._com_button.remove_value_listener(self.com_button_sel_down)
+
+                self._session.set_scene_bank_buttons(self._com_button, self._micro_button)
+
+		# update display to current mode info
 		if (self._operation_mode_selector.mode_index==OP1_MODE_PERFORM):
 			self.update_display_perform_mode()
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_CLIP):
@@ -352,12 +360,24 @@ class OP1(ControlSurface):
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_TRANSPORT):
 			self.update_display_transport_mode()
                         self.clear_tracks_assigments()
+                        self._session.set_scene_bank_buttons(None, None)
                         self._encoder_1.add_value_listener(self.e1_transport_scrub)
                         self._encoder_2.add_value_listener(self.e2_transport_scrub)
                         self._encoder_3.add_value_listener(self.e3_transport_scroll)
                         self._encoder_4.add_value_listener(self.e4_transport_zoom)
+                        self._micro_button.add_value_listener(self.mic_button_sel_up)
+                        self._com_button.add_value_listener(self.com_button_sel_down)
 		elif (self._operation_mode_selector.mode_index==OP1_MODE_MIXER):
 			self.update_display_mixer_mode()
+
+        def mic_button_sel_up(self, value):
+            if value == 127:
+                x = Live.Application.Application.View.NavDirection.up
+                self.app.view.scroll_view(x, "Arranger", False)
+        def com_button_sel_down(self, value):
+            if value == 127:
+                x = Live.Application.Application.View.NavDirection.down
+                self.app.view.scroll_view(x, "Arranger", False)
 
 	def	clear_track_button_callback(self, value):
 		# if clear track button was called, reset track
