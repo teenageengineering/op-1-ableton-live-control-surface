@@ -17,7 +17,12 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 
 ===
 
-LAST UPDATE - 22 April 2017
+LAST UPDATE - 26 April 2017
+- mic and com button select track in transport mode
+- better toggle of views
+- pressing rec buton while recording will only stop record state, not the playback
+
+22 April 2017
 - OP1 can now control transport params of Ableton in "transport mode" (tape)
 - shift + arrows jumps to next/previous marker
 - lift button sets/unsets a marker
