@@ -113,11 +113,6 @@ class OP1(ControlSurface):
 			# getting browser visible state
 			self.arrange_browser_visible = self.app.view.is_view_visible("Browser")
 
-			# getting session view visible state
-			self.session_visible = self.app.view.is_view_visible("Session")
-
-			# getting arrange view visible state
-			self.arrange_visible = self.app.view.is_view_visible("Arranger")
 
 			# getting detail view visible state
 			self.detail_visible = self.app.view.is_view_visible("Detail")
@@ -430,23 +425,10 @@ class OP1(ControlSurface):
 		# clear track assignments
 		self.clear_tracks_assigments()
 
-                # if transport mode, we don't want to control stuff
-		if (self._operation_mode_selector.mode_index==OP1_MODE_TRANSPORT): 
-                    return
                 
 
 		# getting selected strip
 		self._channel_strip = self._mixer.selected_strip()
-
-		# perform track assignments 
-		self._channel_strip.set_volume_control(self._encoder_1)
-		self._channel_strip.set_pan_control(self._encoder_2)
-
-		# setting a tuple of encoders to control sends
-		send_controls = self._encoder_3, self._encoder_4,
-
-		# setting send encoders
-		self._channel_strip.set_send_controls(tuple(send_controls))
 
 		# setting solo button
 		self._channel_strip.set_solo_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS6_BUTTON))
@@ -459,6 +441,21 @@ class OP1(ControlSurface):
 		if (self._channel_strip._track!=self.song().master_track):
 			self._channel_strip.set_mute_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS5_BUTTON))
 
+                # if transport mode, we don't want to map encoders
+		if (self._operation_mode_selector.mode_index==OP1_MODE_TRANSPORT): 
+                    return
+
+		# perform track assignments 
+		self._channel_strip.set_volume_control(self._encoder_1)
+		self._channel_strip.set_pan_control(self._encoder_2)
+
+		# setting a tuple of encoders to control sends
+		send_controls = self._encoder_3, self._encoder_4,
+
+		# setting send encoders
+		self._channel_strip.set_send_controls(tuple(send_controls))
+
+
 
 
 	def back_to_arranger_button_callback(self, value):
@@ -467,14 +464,10 @@ class OP1(ControlSurface):
 
 	def mainview_toggle_button_callback(self, value):
 		if (value==127):
-			if (self.session_visible==True):
-				self.session_visible=False
-				self.arrange_visible=True
+			if (self.app.view.is_view_visible("Session")):
 				self.app.view.show_view("Arranger")
 				self.arrange_browser_visible = self.app.view.is_view_visible("Browser");
 			else:
-				self.session_visible=True
-				self.arrange_visible=False
 				self.app.view.show_view("Session")
 				self.session_browser_visible = self.app.view.is_view_visible("Browser");
 
