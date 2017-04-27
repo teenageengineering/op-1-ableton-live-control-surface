@@ -17,7 +17,10 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 
 ===
 
-LAST UPDATE - 26 April 2017
+LAST UPDATE - 27 April 2017
+- fixed assert raising bug appearing when script was accessing non-existing slot (related probably to groups)
+
+26 April 2017
 - mic and com button select track in transport mode
 - better toggle of views
 - pressing rec buton while recording will only stop record state, not the playback
@@ -41,6 +44,8 @@ LAST UPDATE - 26 April 2017
 - The red box appears again and the song position arrows work again but with a workaround as I still couldn't understand why set_seek_buttons of the TransportComponent aren't working.
 
 INSTALLATION
+
+- Please note that folders in the "MIDI Remote Scripts" folder must not contain dashes. Otherwise python will fail to import the module.
 
 - Mac OSX
 

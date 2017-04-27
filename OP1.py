@@ -542,20 +542,15 @@ class OP1(ControlSurface):
 
 			clip_slot = self._session.scene(0).clip_slot(i)
 			
-			if (clip_slot!=None):
-				if (clip_slot.has_clip()!=False):
-					clip_color = clip_slot._clip_slot.clip.color
-					colors.append(((clip_color>>16)&0x000000ff)>>1)
-					colors.append(((clip_color>>8)&0x000000ff)>>1)
-					colors.append((clip_color&0x000000ff)>>1)
-				else:
-					colors.append(0x00)
-					colors.append(0x00)
-					colors.append(0x00)
-			else:
-				colors.append(0x00)
-				colors.append(0x00)
-				colors.append(0x00)
+                        color = (0x00, 0x00, 0x00)
+                        if (clip_slot!=None) and (clip_slot._clip_slot != None):
+                            if clip_slot.has_clip():
+                                clip_color = clip_slot._clip_slot.clip.color
+                                color = (((clip_color>>16)&0x000000ff)>>1,
+                                         ((clip_color>>8)&0x000000ff)>>1,
+                                         (clip_color&0x000000ff)>>1)
+
+                        colors += color
 
 		length.append(count)
 		sequence = self.text_color_start_sequence + tuple(length) + tuple(colors) + self.text_end_sequence
