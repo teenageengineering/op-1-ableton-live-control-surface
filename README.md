@@ -18,8 +18,8 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 ===
 
 LAST UPDATE - 14 May 2017
-- shift + SS6 will toggle "follow song" option
-- improved text of a scene or a track displayed on OP1 - unprintable chars are removed, spaces joined together and string is limited to a 20 chars (OP1 display limit)
+- shift + seq button will toggle "follow song" option
+- improved text of a scene or a track displayed on OP1 - unprintable chars are removed, spaces joined together and string is limited to 20 chars (OP1 display limit)
 - encoder 4 in transport mode will control size of a track widget on press + turn
 
 27 April 2017
