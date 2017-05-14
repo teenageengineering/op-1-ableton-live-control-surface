@@ -58,6 +58,9 @@ Live.Song.Quantization.q_sixtenth_triplet,
 Live.Song.Quantization.q_thirtytwoth
 ]
 
+
+REPL_CHARS = " "*32 + " !\"# %    *+,-./0123456789:;<=> @abcdefghijklmnopqrstuvwxyz    _ abcdefghijklmnopqrstuvwxyz -  " + " "*129
+
 def get_q_idx(q):
     idx = QUANT_ORDER.index(q) if q in QUANT_ORDER else None
     return idx
@@ -66,6 +69,13 @@ def get_q_enum(idx):
     if idx < 0: return QUANT_ORDER[0]
     if idx > len(QUANT_ORDER)-1: return QUANT_ORDER[-1]
     return QUANT_ORDER[idx]
+
+def to_op1_printable(txt):
+    """convert a string into OP1 printable character. This will change non-printable chars, that would be otherwise displayed as '?', into spaces."""
+    tr = str(txt).translate(REPL_CHARS) # replace non-printable chars with spaces
+    tr = ' '.join(tr.split())           # replace multiple white space chars with a single space
+    return tr[:20] # there is 20 character display limit for the bottom line
+
 
 
 class OP1(ControlSurface):
@@ -164,6 +174,7 @@ class OP1(ControlSurface):
                         self._rec_button.add_value_listener(self.record_button_callback)
 
 			# setting global session assignments
+                        self._ss6_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS6_BUTTON)
                         self._micro_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_MICRO)
                         self._com_button = ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_COM)
 
@@ -181,6 +192,8 @@ class OP1(ControlSurface):
 
                         self._encoder_3_push.add_value_listener(self.e3_push_callback)
                         self._e3_pressed = False
+                        self._encoder_4_push.add_value_listener(self.e4_push_callback)
+                        self._e4_pressed = False
 
 			self.mainview_toggle_button = ButtonElement(False, MIDI_CC_TYPE, CHANNEL, OP1_ARROW_DOWN_BUTTON)
 			self.mainview_toggle_button.add_value_listener(self.mainview_toggle_button_callback)
@@ -303,6 +316,8 @@ class OP1(ControlSurface):
 
         def e3_push_callback(self, value):
             self._e3_pressed = True if value == 127 else False
+        def e4_push_callback(self, value):
+            self._e4_pressed = True if value == 127 else False
 
         def e1_transport_scrub(self, value):
             if value == 4:
@@ -317,6 +332,7 @@ class OP1(ControlSurface):
             idx = get_q_idx(self.song().clip_trigger_quantization)
             self.song().clip_trigger_quantization = get_q_enum(idx+x)
         def e_transport_scroll(self, value, b):
+            """This will move arrangement cursor left/right, with a selection if pressed. Up/Down modifiers do not do anything in Live 9.2 """
             if value == 4:
                 x = Live.Application.Application.View.NavDirection.right
             else:
@@ -325,11 +341,12 @@ class OP1(ControlSurface):
         def e3_transport_scroll(self, value):
             self.e_transport_scroll(value, self._e3_pressed)
         def e4_transport_zoom(self, value):
+            """Zoom arrangement view 'into' the track or make track widget bigger/smaller. The boolean parameter to zoom_view() does funky things and is not really useful to set it to True."""
             if value == 4:
-                x = Live.Application.Application.View.NavDirection.right
+                x = Live.Application.Application.View.NavDirection.down if self._e4_pressed else Live.Application.Application.View.NavDirection.right
             else:
-                x = Live.Application.Application.View.NavDirection.left
-            self.app.view.zoom_view(x, "Arranger", True)
+                x = Live.Application.Application.View.NavDirection.up if self._e4_pressed else Live.Application.Application.View.NavDirection.left
+            self.app.view.zoom_view(x, "Arranger", False)
 
         def play_button_callback(self, value):
             if self.shift_pressed == True:
@@ -437,7 +454,7 @@ class OP1(ControlSurface):
 		self._channel_strip = self._mixer.selected_strip()
 
 		# setting solo button
-		self._channel_strip.set_solo_button(ButtonElement(True, MIDI_CC_TYPE, CHANNEL, OP1_SS6_BUTTON))
+		self._channel_strip.set_solo_button(self._ss6_button)
 
 		# if track can be armed, set arm button
 		if (self._channel_strip._track.can_be_armed):
@@ -466,7 +483,10 @@ class OP1(ControlSurface):
 
 	def back_to_arranger_button_callback(self, value):
 		if (value==127):
+                    if self.shift_pressed == False:
 			self.song().back_to_arranger = False
+                    else:
+                        self.song().view.follow_song = not self.song().view.follow_song
 
 	def mainview_toggle_button_callback(self, value):
 		if (value==127):
@@ -557,7 +577,9 @@ class OP1(ControlSurface):
 		self._send_midi(sequence)
 
 	def update_display_clip_mode(self):
-		self.write_text("sel. scene\r" + str(self.song().view.selected_scene.name.lower().strip()))
+                txt = self.song().view.selected_scene.name.lower()
+                txt = to_op1_printable(txt)
+		self.write_text("sel. scene\r" + txt)
 
 
         def get_quant_str(self, q):
@@ -584,7 +606,9 @@ class OP1(ControlSurface):
 		self.write_text(playing + record + " " + self.get_quant_str(self.song().clip_trigger_quantization) + " " + str("%.2f" % round(self.song().tempo,2)) + "\r" + song_time[:len(song_time)-4])
 
 	def update_display_mixer_mode(self):
-		self.write_text("sel. track\r" + str(self.song().view.selected_track.name.lower()))
+                txt = self.song().view.selected_track.name.lower()
+                txt = to_op1_printable(txt)
+		self.write_text("sel. track\r" + txt)
 
 	def update_display(self):
 		if not(self.device_connected):
