@@ -37,6 +37,8 @@ from _Framework.DeviceComponent import DeviceComponent
 from _Framework.SessionComponent import SessionComponent
 from _Framework.InputControlElement import *
 
+# Browser, Arranger, Session, Detail, Detail/Clip, Detail/DeviceChain, 
+
 # OP-1 imports
 
 from OP1ModeSelectorComponent import OP1ModeSelectorComponent
@@ -59,6 +61,7 @@ Live.Song.Quantization.q_thirtytwoth
 ]
 
 
+# to properly display strings on op1 display we need to do some character substitution
 REPL_CHARS = " "*32 + " !\"# %    *+,-./0123456789:;<=> @abcdefghijklmnopqrstuvwxyz    _ abcdefghijklmnopqrstuvwxyz -  " + " "*129
 
 def get_q_idx(q):
@@ -489,22 +492,28 @@ class OP1(ControlSurface):
                         self.song().view.follow_song = not self.song().view.follow_song
 
 	def mainview_toggle_button_callback(self, value):
-		if (value==127):
-			if (self.app.view.is_view_visible("Session")):
-				self.app.view.show_view("Arranger")
-				self.arrange_browser_visible = self.app.view.is_view_visible("Browser");
-			else:
-				self.app.view.show_view("Session")
-				self.session_browser_visible = self.app.view.is_view_visible("Browser");
+            if self.shift_pressed == True:
+                if value == 127: self.song().undo()
+            else:
+                if (value==127):
+                    if (self.app.view.is_view_visible("Session")):
+                        self.app.view.show_view("Arranger")
+                        self.arrange_browser_visible = self.app.view.is_view_visible("Browser");
+                    else:
+                        self.app.view.show_view("Session")
+                        self.session_browser_visible = self.app.view.is_view_visible("Browser");
 
 	def detailview_toggle_button_callback(self, value):
-		if (value==127):
-			if (self.detail_visible==True):
-				self.detail_visible=False
-				self.app.view.hide_view("Detail")
-			else:
-				self.detail_visible=True
-				self.app.view.show_view("Detail")
+            if self.shift_pressed == True:
+                if value == 127: self.song().redo()
+            else:
+                if (value==127):
+                    if (self.detail_visible==True):
+                        self.detail_visible=False
+                        self.app.view.hide_view("Detail")
+                    else:
+                        self.detail_visible=True
+                        self.app.view.show_view("Detail")
 
 	def write_text(self, msg):
 		text_list = []
