@@ -404,13 +404,15 @@ class OP1(ControlSurface):
 		# if clear track button was called, reset track
 		if (value==127):
 			for i in range(len(self.song().tracks)):
-				self.song().tracks[i].arm = 0
-				self.song().tracks[i].solo = 0
-				self.song().tracks[i].mute = 0
+                            track = self.song().tracks[i]
+                            if track.can_be_armed == True: 
+                                self.song().tracks[i].arm = 0
+                            self.song().tracks[i].solo = 0
+                            self.song().tracks[i].mute = 0
 
 			for i in range(len(self.song().return_tracks)):
-				self.song().tracks[i].solo = 0
-				self.song().tracks[i].mute = 0
+			    self.song().tracks[i].solo = 0
+			    self.song().tracks[i].mute = 0
 
 	def clear_return_track_assignment(self, strip):
 		# clear return track assingments

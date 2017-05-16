@@ -17,7 +17,10 @@ following webpage: http://www.gnu.org/licenses/gpl-2.0.html
 
 ===
 
-LAST UPDATE - 15 May 2017
+LAST UPDATE - 16 May 2017
+- fixed bug that prevented clear button (ss8/m2) from working properly on sessions with track groups
+
+15 May 2017
 - shift + paste (arrow down) button is undo now
 - shift + scissors is redo
 
