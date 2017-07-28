@@ -24,7 +24,7 @@ import consts
 
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
 from _Framework.ButtonElement import ButtonElement
-from _Framework.InputControlElement import *
+from _Framework.InputControlElement import MIDI_CC_TYPE, MIDI_NOTE_TYPE
 
 
 class OP1ModeSelectorComponent(ModeSelectorComponent):
@@ -44,14 +44,17 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         self._shift_active = False
 
         # creating buttons for the arrows keys
-        self._left_arrow_button = ButtonElement(True, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_LEFT_ARROW)
-        self._right_arrow_button = ButtonElement(True, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_RIGHT_ARROW)
+        self._left_arrow_button = ButtonElement(True, MIDI_CC_TYPE,
+                                                consts.CHANNEL, consts.OP1_LEFT_ARROW)
+        self._right_arrow_button = ButtonElement(True, MIDI_CC_TYPE,
+                                                 consts.CHANNEL, consts.OP1_RIGHT_ARROW)
 
         # self._left_arrow_button.add_value_listener(self.left_arrow_pressed)
         # self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
 
         # creating button for the shift key
-        self._shift_button = ButtonElement(True, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SHIFT_BUTTON)
+        self._shift_button = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL,
+                                           consts.OP1_SHIFT_BUTTON)
         self._shift_button.add_value_listener(self.shift_pressed)
 
         # creating buttons for the note shifted keys
@@ -60,7 +63,9 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
         # creating a list of shifted note keys buttons
         for i in range(len(self.note_keys_shifted_ccs)):
-            self.note_keys_shifted_buttons.append(ButtonElement(True, consts.MIDI_NOTE_TYPE, consts.CHANNEL, self.note_keys_shifted_ccs[i]))
+            self.note_keys_shifted_buttons.append(ButtonElement(
+                True, MIDI_NOTE_TYPE,
+                consts.CHANNEL, self.note_keys_shifted_ccs[i]))
 
         # creating buttons for the note keys
         self.note_keys_buttons = []
@@ -68,12 +73,14 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
         # creating a list of note keys buttons
         for i in range(len(self.note_keys_ccs)):
-            self.note_keys_buttons.append(ButtonElement(True, consts.MIDI_NOTE_TYPE, consts.CHANNEL, self.note_keys_ccs[i]))
+            self.note_keys_buttons.append(ButtonElement(True, MIDI_NOTE_TYPE,
+                                                        consts.CHANNEL, self.note_keys_ccs[i]))
 
         # browser toggle only with shift
-        self.lift_button = ButtonElement(False, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_ARROW_UP_BUTTON)
-        self.ss1_button = ButtonElement(True, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS1_BUTTON)
-        self.ss2_button = ButtonElement(True, consts.MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS2_BUTTON)
+        self.lift_button = ButtonElement(False, MIDI_CC_TYPE,
+                                         consts.CHANNEL, consts.OP1_ARROW_UP_BUTTON)
+        self.ss1_button = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS1_BUTTON)
+        self.ss2_button = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS2_BUTTON)
 #       self.lift_button.add_value_listener(self.browser_toggle_button_callback)
         self._parent._transport.set_punch_buttons(self.ss1_button, self.ss2_button)
 
@@ -109,7 +116,6 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
                 self._right_arrow_button.add_value_listener(self.right_arrow_pressed)
                 self._left_arrow_button.remove_value_listener(self.shifted_left_arrow_pressed)
                 self._right_arrow_button.remove_value_listener(self.shifted_right_arrow_pressed)
-                # self._transport.set_seek_buttons(self._right_arrow_button, self._left_arrow_button)
         # globals - browser toggle with shift only
         if value == 127:
             self._parent.shift_pressed = True
@@ -235,7 +241,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
                 self.note_keys_buttons[i].add_value_listener(self.note_key_pressed, True)
 
             for i in range(consts.NUM_TRACKS):
-                self.note_keys_shifted_buttons[i].add_value_listener(self.note_key_shifted_pressed, True)
+                self.note_keys_shifted_buttons[i].add_value_listener(
+                    self.note_key_shifted_pressed, True)
 
         elif (self._mode_index == consts.OP1_MODE_MIXER):
             self._parent.log("MIXER MODE")
@@ -254,7 +261,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
             self._session.set_track_bank_buttons(self._right_arrow_button, self._left_arrow_button)
 
             # setting last key note as stop all clip button
-            self._session.set_stop_all_clips_button(ButtonElement(True, consts.MIDI_NOTE_TYPE, consts.CHANNEL, 100))
+            self._session.set_stop_all_clips_button(ButtonElement(True, MIDI_NOTE_TYPE,
+                                                                  consts.CHANNEL, 100))
 
             # setting track stop clip buttons
             self._session.set_stop_track_clip_buttons(tuple(self.note_keys_shifted_buttons))
@@ -282,7 +290,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
             # removing value listeners for shifted note keys
             for i in range(consts.NUM_TRACKS):
-                self.note_keys_shifted_buttons[i].remove_value_listener(self.note_key_shifted_pressed)
+                self.note_keys_shifted_buttons[i].remove_value_listener(
+                    self.note_key_shifted_pressed)
 
             # clearing transport seek buttons
             self._transport.set_seek_buttons(None, None)
