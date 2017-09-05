@@ -49,6 +49,6 @@ INSTALLATION
 
 ==
 
-Developer: Nuno Santos 
+Main developer: Nuno Santos 
 
-For related questions please use the contact form at www.imaginando.pt
+More information can be found at https://www.imaginando.pt/products/op1
