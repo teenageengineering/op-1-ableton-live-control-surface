@@ -1,6 +1,6 @@
 ### Installation
 
-Download and unzip. Rename the folder OP-1.
+Download and unzip. Rename the folder to "OP1".
 
 #### Mac OSX
 
