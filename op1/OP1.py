@@ -406,10 +406,11 @@ class OP1(ControlSurface):
         self.app.view.zoom_view(x, "Arranger", False)
 
     def play_button_callback(self, value):
-        if self.shift_pressed is True:
-            self.song().play_selection()
-        else:
-            self.song().start_playing()
+        if value == 127:
+            if self.shift_pressed is True:
+                self.song().play_selection()
+            else:
+                self.song().start_playing()
 
     def record_button_callback(self, value):
         if value == 127:
