@@ -417,15 +417,6 @@ class OP1(ControlSurface):
             self.song().record_mode = not self.song().record_mode
 
     def mode_index_changed(self):
-        # remove transport assignments
-        self._encoder_1.remove_value_listener(self.e1_transport_scrub)
-        self._encoder_2.remove_value_listener(self.e2_transport_scrub)
-        self._encoder_3.remove_value_listener(self.e3_transport_scroll)
-        self._encoder_4.remove_value_listener(self.e4_transport_zoom)
-        self._micro_button.remove_value_listener(self.mic_button_sel_up)
-        self._com_button.remove_value_listener(self.com_button_sel_down)
-
-        self._session.set_scene_bank_buttons(self._com_button, self._micro_button)
 
         # update display to current mode info
         if (self._operation_mode_selector.mode_index == consts.OP1_MODE_PERFORM):
@@ -434,14 +425,6 @@ class OP1(ControlSurface):
             self.update_display_clip_mode()
         elif (self._operation_mode_selector.mode_index == consts.OP1_MODE_TRANSPORT):
             self.update_display_transport_mode()
-            self.clear_tracks_assigments()
-            self._session.set_scene_bank_buttons(None, None)
-            self._encoder_1.add_value_listener(self.e1_transport_scrub)
-            self._encoder_2.add_value_listener(self.e2_transport_scrub)
-            self._encoder_3.add_value_listener(self.e3_transport_scroll)
-            self._encoder_4.add_value_listener(self.e4_transport_zoom)
-            self._micro_button.add_value_listener(self.mic_button_sel_up)
-            self._com_button.add_value_listener(self.com_button_sel_down)
         elif (self._operation_mode_selector.mode_index == consts.OP1_MODE_MIXER):
             self.update_display_mixer_mode()
 

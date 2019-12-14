@@ -18,11 +18,13 @@
 ##################################################################
 
 
+import Live
 import consts
 
 # Ableton Live imports
 
 from _Framework.ModeSelectorComponent import ModeSelectorComponent
+from _Framework.EncoderElement import EncoderElement
 from _Framework.ButtonElement import ButtonElement
 from _Framework.InputControlElement import MIDI_CC_TYPE, MIDI_NOTE_TYPE
 
@@ -83,6 +85,68 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         self.ss2_button = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS2_BUTTON)
 #       self.lift_button.add_value_listener(self.browser_toggle_button_callback)
         self._parent._transport.set_punch_buttons(self.ss1_button, self.ss2_button)
+
+
+
+
+
+
+
+        self._play_button = ButtonElement(True, MIDI_CC_TYPE,
+                                          consts.CHANNEL, consts.OP1_PLAY_BUTTON)
+        self._rec_button = ButtonElement(True, MIDI_CC_TYPE,
+                                         consts.CHANNEL, consts.OP1_REC_BUTTON)
+
+# setting global session assignments
+        self._ss6_button = ButtonElement(True, MIDI_CC_TYPE,
+                                         consts.CHANNEL, consts.OP1_SS6_BUTTON)
+        self._micro_button = ButtonElement(True, MIDI_CC_TYPE,
+                                           consts.CHANNEL, consts.OP1_MICRO)
+        self._com_button = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_COM)
+
+        # encoder for transport control - leave it empty for now
+        self._encoder_1 = EncoderElement(MIDI_CC_TYPE, consts.CHANNEL,
+                                         consts.OP1_ENCODER_1,
+                                         Live.MidiMap.MapMode.relative_two_compliment)
+        self._encoder_2 = EncoderElement(MIDI_CC_TYPE, consts.CHANNEL,
+                                         consts.OP1_ENCODER_2,
+                                         Live.MidiMap.MapMode.relative_two_compliment)
+        self._encoder_3 = EncoderElement(MIDI_CC_TYPE, consts.CHANNEL,
+                                         consts.OP1_ENCODER_3,
+                                         Live.MidiMap.MapMode.relative_two_compliment)
+        self._encoder_4 = EncoderElement(MIDI_CC_TYPE, consts.CHANNEL,
+                                         consts.OP1_ENCODER_4,
+                                         Live.MidiMap.MapMode.relative_two_compliment)
+# setting misc listeners
+
+        self._encoder_1_push = ButtonElement(True, MIDI_CC_TYPE,
+                                             consts.CHANNEL, consts.OP1_ENCODER_1_PUSH)
+        self._encoder_2_push = ButtonElement(True, MIDI_CC_TYPE,
+                                             consts.CHANNEL, consts.OP1_ENCODER_2_PUSH)
+        self._encoder_3_push = ButtonElement(True, MIDI_CC_TYPE,
+                                             consts.CHANNEL, consts.OP1_ENCODER_3_PUSH)
+        self._encoder_4_push = ButtonElement(True, MIDI_CC_TYPE,
+                                             consts.CHANNEL, consts.OP1_ENCODER_4_PUSH)
+
+
+        self.mainview_toggle_button = ButtonElement(False, MIDI_CC_TYPE,
+                                                    consts.CHANNEL,
+                                                    consts.OP1_ARROW_DOWN_BUTTON)
+
+        self.detailview_toggle_button = ButtonElement(False, MIDI_CC_TYPE,
+                                                      consts.CHANNEL,
+                                                      consts.OP1_SCISSOR_BUTTON)
+
+        self.clear_track_button = ButtonElement(True, MIDI_CC_TYPE,
+                                                consts.CHANNEL, consts.OP1_SS8_BUTTON)
+
+        self.back_to_arranger_button = ButtonElement(True, MIDI_CC_TYPE,
+                                                     consts.CHANNEL, consts.OP1_SEQ_BUTTON)
+ 
+
+
+
+
 
         self.update()
 
@@ -218,6 +282,8 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         # clearing last mappings
         self.clear()
 
+        self._session.set_scene_bank_buttons(self._com_button, self._micro_button)
+
         # updating current mode index
         self._current_mode = self._mode_index
 
@@ -225,6 +291,35 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
         if (self._mode_index == consts.OP1_MODE_PERFORM):
             # nothing is done for perform mode
             self._parent.log("PERFORM MODE")
+
+            self._channel_strip = self._mixer.selected_strip()
+            # perform track assignments
+            self._channel_strip.set_volume_control(self._encoder_1)
+            self._channel_strip.set_pan_control(self._encoder_2)
+
+            # setting solo button
+            self._channel_strip.set_solo_button(self._ss6_button)
+
+            # if track can be armed, set arm button
+            if (self._channel_strip._track.can_be_armed):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS7_BUTTON)
+                self._channel_strip.set_arm_button(b)
+            # if track is no master, set mute button
+            if (self._channel_strip._track != self.song().master_track):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS5_BUTTON)
+                self._channel_strip.set_mute_button(b)
+
+            # setting a tuple of encoders to control sends
+            send_controls = self._encoder_3, self._encoder_4,
+            # setting send encoders
+            self._channel_strip.set_send_controls(tuple(send_controls))
+
+
+
+
+
+
+
 
         elif (self._mode_index == consts.OP1_MODE_TRANSPORT):
             self._parent.log("TRANSPORT MODE")
@@ -243,6 +338,26 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
             for i in range(consts.NUM_TRACKS):
                 self.note_keys_shifted_buttons[i].add_value_listener(
                     self.note_key_shifted_pressed, True)
+
+
+            self._parent.clear_tracks_assigments()
+            self._session.set_scene_bank_buttons(None, None)
+            self._encoder_1.add_value_listener(self._parent.e1_transport_scrub)
+            self._encoder_2.add_value_listener(self._parent.e2_transport_scrub)
+            self._encoder_3.add_value_listener(self._parent.e3_transport_scroll)
+            self._encoder_4.add_value_listener(self._parent.e4_transport_zoom)
+            self._micro_button.add_value_listener(self._parent.mic_button_sel_up)
+            self._com_button.add_value_listener(self._parent.com_button_sel_down)
+            # setting solo button
+            self._channel_strip.set_solo_button(self._ss6_button)
+            # if track can be armed, set arm button
+            if (self._channel_strip._track.can_be_armed):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS7_BUTTON)
+                self._channel_strip.set_arm_button(b)
+            # if track is no master, set mute button
+            if (self._channel_strip._track != self.song().master_track):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS5_BUTTON)
+                self._channel_strip.set_mute_button(b)
 
         elif (self._mode_index == consts.OP1_MODE_MIXER):
             self._parent.log("MIXER MODE")
@@ -274,7 +389,40 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
             # setting scene launch button
             self._session.scene(0).set_launch_button(self.note_keys_buttons[consts.NUM_TRACKS])
 
+
+
+            # perform track assignments
+            self._channel_strip.set_volume_control(self._encoder_1)
+            self._channel_strip.set_pan_control(self._encoder_2)
+            # setting solo button
+            self._channel_strip.set_solo_button(self._ss6_button)
+            # setting a tuple of encoders to control sends
+            send_controls = self._encoder_3, self._encoder_4,
+            # setting send encoders
+            self._channel_strip.set_send_controls(tuple(send_controls))
+            # if track can be armed, set arm button
+            if (self._channel_strip._track.can_be_armed):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS7_BUTTON)
+                self._channel_strip.set_arm_button(b)
+            # if track is no master, set mute button
+            if (self._channel_strip._track != self.song().master_track):
+                b = ButtonElement(True, MIDI_CC_TYPE, consts.CHANNEL, consts.OP1_SS5_BUTTON)
+                self._channel_strip.set_mute_button(b)
+
+
     def clear(self):
+
+        # remove transport assignments
+        self._encoder_1.remove_value_listener(self._parent.e1_transport_scrub)
+        self._encoder_2.remove_value_listener(self._parent.e2_transport_scrub)
+        self._encoder_3.remove_value_listener(self._parent.e3_transport_scroll)
+        self._encoder_4.remove_value_listener(self._parent.e4_transport_zoom)
+        self._micro_button.remove_value_listener(self._parent.mic_button_sel_up)
+        self._com_button.remove_value_listener(self._parent.com_button_sel_down)
+
+
+
+
         if (self._current_mode == consts.OP1_MODE_PERFORM):
             self._parent.log("CLEARING PERFORM MODE")
 
@@ -295,6 +443,7 @@ class OP1ModeSelectorComponent(ModeSelectorComponent):
 
             # clearing transport seek buttons
             self._transport.set_seek_buttons(None, None)
+
 
         elif (self._current_mode == consts.OP1_MODE_MIXER):
             self._parent.log("CLEARING MIXER MODE")
