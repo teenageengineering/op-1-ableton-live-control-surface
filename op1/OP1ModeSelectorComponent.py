@@ -19,7 +19,7 @@
 
 
 import Live
-import consts
+from . import consts
 
 # Ableton Live imports
 

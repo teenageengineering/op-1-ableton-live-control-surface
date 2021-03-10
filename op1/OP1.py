@@ -19,12 +19,12 @@
 
 # OP-1 Python Scripts V1.0
 
-from __future__ import with_statement
+
 
 import Live
 import time
 
-import consts
+from . import consts
 
 # Ableton Live Framework imports
 
@@ -40,7 +40,7 @@ from _Framework.InputControlElement import MIDI_CC_TYPE
 
 # OP-1 imports
 
-from OP1ModeSelectorComponent import OP1ModeSelectorComponent
+from .OP1ModeSelectorComponent import OP1ModeSelectorComponent
 
 QUANT_ORDER = [
     Live.Song.Quantization.q_no_q,
