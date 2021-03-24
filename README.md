@@ -1,37 +1,10 @@
-### Installation
+### OP-1 ableton live control surface
 
-Download and unzip. Rename the folder to "OP1".
+this script now lives here:    
+👉 https://github.com/marctdt/op-1-ableton-live-control-surface/tree/live-11
 
-#### Mac OSX
+### credits
 
- Right click on Live App bundle and click "Show Package Contents"
- Navigate to "Contents\App-Resources\MIDI Remote Scripts"
- Drop OP-1 folder into MIDI Remote Scripts Folder
-
-#### Windows
-
- Look for Ableton Live executable file
- Look for the folder MIDI Remote Scripts
- Drop OP-1 folder into MIDI Remote Scripts Folder
-
-#### Finalize
-
- Go to Ableton Live MIDI preferences
- Choose OP1 Control Surface
-
-For operation details give a look on TE-OP1-Mapping-Guide.pdf
-
-### For developers
-
-#### Branches
-
-- master - Control Surface base for Ableton Live 8
-- live-9 - Modified base for Ableton Live 9
-
-#### Known issues
-
-- The scripts are not fully working on Live 9
-
-Main developer: Nuno Santos 
-
-More information can be found at https://www.imaginando.pt/products/op1
+Nuno Santos (Imaginando, Lda) for the original implementation  
+Jozef Henzl (https://github.com/pcppcp) for the live 9 updates  
+Marc Tran Du Trieu (https://github.com/marctdt) for the new live 11 / python3 port  
