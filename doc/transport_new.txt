@@ -1,0 +1,50 @@
+In transport mode:
+
+Encoders:
+	Blue 	(rotate) - scrub the playback position
+	Green	(rotate) - set quantization parameters
+	White	(rotate) - move around playmarker
+		(rotate + press) - make a selection of a song
+	Red	(rotate) - zoom arrangement view
+		(rotate + press) - zoom currently selected track
+
+(41) arrow left
+	(pressed)	move around playmarker
+	(with shift)	Jump to previous locator
+(42) arrow right
+	(pressed)	move around playmarker
+	(with shift)	Jump to next locator
+(48) microphone
+	(pressed)	select previous track/channel
+(49) com
+	(pressed)	select next track/channel
+
+
+-------------------------------------------------------------------------------
+General:
+
+(39) play - 
+	(when stopped) 	start playing
+	(when playing)	jump on to playback start position
+	(with shift pressed) if there is selection, stop upon reaching the end of the selection
+
+(38) record
+	(when stopped)	start both recording and playback
+	(when playing)	stop record state, playback continues (like on the OP1 ;)
+
+(15) lift
+	(pressed)	set/unset a locator at current position
+	(with shift)	open/hide browser window
+
+
+(26) sequencer
+	(pressed)	stop playback of all clips
+	(with shift)	toggle follow playmarker
+
+(16) paste
+	(pressed)	toggle arrangement/clip view
+	(with shift)	undo
+
+(17) scissors
+	(pressed)	toggle detail view
+	(with shift)	redo
